@@ -59,13 +59,12 @@ export function usePortfolio() {
     const activePortfolio = portfolios.find(p => p.id === activePortfolioId) || portfolios[0];
     const assets = activePortfolio.assets;
 
-    // Persist changes to Firestore
     const savePortfolios = async (newPortfolios: Portfolio[]) => {
         if (!user) return;
         try {
-            await updateDoc(doc(db, 'users', user.uid), {
+            await setDoc(doc(db, 'users', user.uid), {
                 portfolios: newPortfolios
-            });
+            }, { merge: true });
         } catch (error) {
             console.error('Error saving portfolios:', error);
         }
