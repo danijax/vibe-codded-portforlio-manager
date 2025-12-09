@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { LayoutDashboard, PieChart, Plus, Wallet, Trash2, LogOut } from 'lucide-react';
+import { LayoutDashboard, PieChart, Plus, Wallet, Trash2, LogOut, TrendingUp } from 'lucide-react';
 import { usePortfolio } from './hooks/usePortfolio';
 import { AssetList } from './components/AssetList';
 import { AssetForm } from './components/AssetForm';
 import { AllocationChart } from './components/AllocationChart';
 import { RebalanceCalculator } from './components/RebalanceCalculator';
+import { BacktestModal } from './components/BacktestModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { auth } from './lib/firebase';
@@ -25,6 +26,7 @@ function Dashboard() {
   } = usePortfolio();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isBacktestOpen, setIsBacktestOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [isCreatingPortfolio, setIsCreatingPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
@@ -151,6 +153,17 @@ function Dashboard() {
           </div>
         </div>
 
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-white">Action Center</h2>
+          <button
+            onClick={() => setIsBacktestOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-blue-300 rounded-lg border border-slate-700 transition-colors"
+          >
+            <TrendingUp className="w-5 h-5" />
+            Backtest Strategy
+          </button>
+        </div>
+
         <RebalanceCalculator assets={assets} totalValue={totalValue} />
 
         <AssetList
@@ -165,6 +178,12 @@ function Dashboard() {
         onClose={handleCloseForm}
         onSubmit={handleAddAsset}
         initialData={editingAsset}
+      />
+
+      <BacktestModal
+        isOpen={isBacktestOpen}
+        onClose={() => setIsBacktestOpen(false)}
+        assets={assets}
       />
 
       {isCreatingPortfolio && (
