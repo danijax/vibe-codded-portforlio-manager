@@ -47,3 +47,28 @@ export const fetchPrices = async (ids: string[]): Promise<PriceData> => {
         return {};
     }
 };
+
+export interface HistoricalPrice {
+    timestamp: number;
+    price: number;
+}
+
+export const fetchHistoricalPrices = async (id: string, days: number): Promise<HistoricalPrice[]> => {
+    try {
+        const response = await axios.get(`${COINGECKO_API_URL}/coins/${id}/market_chart`, {
+            params: {
+                vs_currency: 'usd',
+                days: days,
+                interval: 'daily'
+            }
+        });
+
+        return response.data.prices.map((item: [number, number]) => ({
+            timestamp: item[0],
+            price: item[1]
+        }));
+    } catch (error) {
+        console.error(`Error fetching history for ${id}:`, error);
+        return [];
+    }
+};
